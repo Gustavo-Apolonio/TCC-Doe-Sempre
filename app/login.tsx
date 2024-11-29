@@ -6,6 +6,8 @@ import { ValidateDocument } from "@/utils/ValidateDocument";
 import ActionButton from "@/components/ActionButton";
 import PageComponent from "@/components/Page";
 import { useNavigation } from "expo-router";
+import { useAppDispatch } from "@/store/hooks";
+import { userActions } from "@/store/states/slices";
 
 const CPF_MASK = "999.999.999-99";
 const CNPJ_MASK = "99.999.999/9999-99";
@@ -13,6 +15,7 @@ const TYPE = "99999999999999"
 
 export default function LoginPage() {
   const navigation = useNavigation();
+  const dispatch = useAppDispatch();
 
   const [document, setDocument] = useState<string>();
   const [documentType, setDocumentType] = useState<typeof CPF_MASK | typeof CNPJ_MASK | typeof TYPE>(TYPE);
@@ -29,6 +32,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState<string>();
 
   const login = () => {
+    dispatch(userActions.setState({ document }));
     (navigation.navigate as any)('home');
   }
 

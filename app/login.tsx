@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TextInputMask } from "react-native-masked-text";
-import Logo from "@/components/Logo";
-import Footer from "@/components/Footer";
-import MotivationText from "@/components/Motivation";
 import AppBorder from "@/styles/CustomBorder";
 import { ValidateDocument } from "@/utils/ValidateDocument";
 import ActionButton from "@/components/ActionButton";
+import PageComponent from "@/components/Page";
 
 const CPF_MASK = "999.999.999-99";
 const CNPJ_MASK = "99.999.999/9999-99";
@@ -34,69 +32,48 @@ export default function LoginPage() {
   }
 
   return (
-    <View style={styles.container}>
-      <Logo size="sm" />
-
-      <View style={styles.content}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabelText}>CPF/CNPJ</Text>
-          <TextInputMask
-            type={"custom"}
-            options={{
-              mask: documentType,
-              validator: (val) => ValidateDocument(val, typeof document === typeof CPF_MASK),
-            }}
-            keyboardType="numeric"
-            style={styles.input}
-            placeholder="Insirua seu CPF/CNPJ"
-            placeholderTextColor="#999"
-            value={document}
-            onBlur={() => changeDocumentType()}
-            onFocus={() => setDocumentType(TYPE)}
-            returnKeyType="done"
-            onChangeText={(val) => changeDocumentVal(val)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabelText}>Senha</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Insira sua senha"
-            secureTextEntry
-            placeholderTextColor="#999"
-            value={password}
-            returnKeyType="go"
-            enablesReturnKeyAutomatically
-            onSubmitEditing={() => login()}
-            onChangeText={(val) => setPassword(val)}
-          />
-        </View>
-        <View style={styles.enterArea}>
-          <ActionButton text="Entrar" callback={login} />
-        </View>
+    <PageComponent>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabelText}>CPF/CNPJ</Text>
+        <TextInputMask
+          type={"custom"}
+          options={{
+            mask: documentType,
+            validator: (val) => ValidateDocument(val, typeof document === typeof CPF_MASK),
+          }}
+          keyboardType="numeric"
+          style={styles.input}
+          placeholder="Insira seu CPF/CNPJ"
+          placeholderTextColor="#999"
+          value={document}
+          onBlur={() => changeDocumentType()}
+          onFocus={() => setDocumentType(TYPE)}
+          returnKeyType="done"
+          onChangeText={(val) => changeDocumentVal(val)}
+        />
       </View>
-
-      <MotivationText />
-
-      <Footer />
-    </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputLabelText}>Senha</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Insira sua senha"
+          secureTextEntry
+          placeholderTextColor="#999"
+          value={password}
+          returnKeyType="go"
+          enablesReturnKeyAutomatically
+          onSubmitEditing={() => login()}
+          onChangeText={(val) => setPassword(val)}
+        />
+      </View>
+      <View style={styles.enterArea}>
+        <ActionButton text="Entrar" callback={login} />
+      </View>
+    </PageComponent>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-
-  content: {
-    width: "80%",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
   inputContainer: {
     alignItems: "flex-start",
     justifyContent: "space-between",
@@ -120,6 +97,6 @@ const styles = StyleSheet.create({
   },
 
   enterArea: {
-    alignItems: 'flex-end',
+    width: '100%',
   }
 });

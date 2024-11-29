@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     elevation: 2,
+    width: '100%',
   },
   btnText: {
     color: "#000",

@@ -1,4 +1,5 @@
-import { Image, StyleSheet, View } from "react-native";
+import DebugBorder from "@/styles/DebugBorder";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
 
 const ImgSource = require('@/assets/images/bubble.png');
 
@@ -16,7 +17,7 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   img: {
-    width: 500,
-    height: 200,
+    width: Dimensions.get('screen').width,
+    height: 275,
   },
 });

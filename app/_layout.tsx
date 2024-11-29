@@ -13,6 +13,8 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: '' }} />
       <Stack.Screen name="login" options={{ title: '' }} />
+      <Stack.Screen name="registerDonor" options={{ title: '' }} />
+      <Stack.Screen name="registerReceiver" options={{ title: '' }} />
     </Stack>
   );
 }

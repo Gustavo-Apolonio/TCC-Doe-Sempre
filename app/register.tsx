@@ -5,8 +5,14 @@ import { TextInputMask } from "react-native-masked-text";
 import PageComponent from "@/components/Page";
 import ActionButton from "@/components/ActionButton";
 import AppBorder from "@/styles/CustomBorder";
+import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "expo-router";
 
 export default function RegisterPage() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { isDonor } = route.params as any;
+
   const [name, setName] = useState<string>();
   const [document, setDocument] = useState<string>();
   const [birthdate, setBirthdate] = useState<string>();
@@ -21,21 +27,13 @@ export default function RegisterPage() {
   }
 
   const register = () => {
-    alert(JSON.stringify({
-      name,
-      document,
-      birthdate,
-      mobileNumber,
-      email,
-      city,
-      uf
-    }))
+    (navigation.navigate as any)('home');
   };
 
   return (
     <PageComponent>
       <View style={styles.container}>
-        <Text style={styles.inputLabelText}>Nome Completo</Text>
+        <Text style={styles.inputLabelText}>Nome {isDonor ? 'Completo' : 'Instituição'}</Text>
         <TextInput
           style={styles.input}
           placeholder="Insira seu nome"
@@ -48,12 +46,12 @@ export default function RegisterPage() {
       </View>
 
       <View style={styles.container}>
-        <Text style={styles.inputLabelText}>CPF</Text>
+        <Text style={styles.inputLabelText}>{isDonor ? 'CPF' : 'CNPJ'}</Text>
         <TextInputMask
-          type="cpf"
+          type={isDonor ? "cpf" : 'cnpj'}
           keyboardType="numeric"
           style={styles.input}
-          placeholder="Insira seu CPF"
+          placeholder={"Insira seu " + isDonor ? 'CPF' : 'CNPJ'}
           placeholderTextColor="#999"
           value={document}
           returnKeyType="next"
@@ -62,24 +60,26 @@ export default function RegisterPage() {
       </View>
 
       <View style={styles.rowContainer}>
-        <View style={{ ...styles.container, width: '50%' }}>
-          <Text style={styles.inputLabelText}>Data de nascimento</Text>
-          <TextInputMask
-            type="custom"
-            options={{
-              mask: '99/99/9999'
-            }}
-            keyboardType="numeric"
-            style={styles.input}
-            placeholder="__/__/__"
-            placeholderTextColor="#999"
-            value={birthdate}
-            returnKeyType="next"
-            onChangeText={(val) => setBirthdate(val)}
-          />
-        </View>
+        {isDonor && (
+          <View style={{ ...styles.container, width: '50%' }}>
+            <Text style={styles.inputLabelText}>Data de nascimento</Text>
+            <TextInputMask
+              type="custom"
+              options={{
+                mask: '99/99/9999'
+              }}
+              keyboardType="numeric"
+              style={styles.input}
+              placeholder="__/__/__"
+              placeholderTextColor="#999"
+              value={birthdate}
+              returnKeyType="next"
+              onChangeText={(val) => setBirthdate(val)}
+            />
+          </View>
+        )}
 
-        <View style={{ ...styles.container, width: '50%' }}>
+        <View style={{ ...styles.container, width: isDonor ? '50%' : '100%' }}>
           <Text style={styles.inputLabelText}>Telefone</Text>
           <TextInputMask
             type="cel-phone"
@@ -145,7 +145,7 @@ export default function RegisterPage() {
       </View>
 
       <View style={styles.enterArea}>
-        <ActionButton text="Sou DOADOR" callback={register} />
+        <ActionButton text={`Sou ${isDonor ? 'DOADOR' : 'Ponto de COLETA'}`} callback={register} />
       </View>
     </PageComponent>
   )

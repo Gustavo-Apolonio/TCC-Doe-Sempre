@@ -1,6 +1,13 @@
-import { Stack } from "expo-router";
+import { createStackNavigator } from "@react-navigation/stack";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useEffect } from "react";
+
+import SplashPage from "./index";
+import LoginPage from "./login";
+import RegisterPage from "./register";
+import HomePage from "./home";
+
+const Stack = createStackNavigator();
 
 export default function RootLayout() {
   useEffect(() => {
@@ -10,11 +17,17 @@ export default function RootLayout() {
   });
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: '' }} />
-      <Stack.Screen name="login" options={{ title: '' }} />
-      <Stack.Screen name="registerDonor" options={{ title: '' }} />
-      <Stack.Screen name="registerReceiver" options={{ title: '' }} />
-    </Stack>
+    <Stack.Navigator
+      initialRouteName="index"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="index" component={SplashPage} />
+      <Stack.Screen name="login" component={LoginPage} />
+      <Stack.Screen name="register" component={RegisterPage} />
+
+      <Stack.Screen name="home" component={HomePage} />
+    </Stack.Navigator>
   );
 }

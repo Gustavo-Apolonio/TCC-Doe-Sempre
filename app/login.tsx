@@ -5,12 +5,15 @@ import AppBorder from "@/styles/CustomBorder";
 import { ValidateDocument } from "@/utils/ValidateDocument";
 import ActionButton from "@/components/ActionButton";
 import PageComponent from "@/components/Page";
+import { useNavigation } from "expo-router";
 
 const CPF_MASK = "999.999.999-99";
 const CNPJ_MASK = "99.999.999/9999-99";
 const TYPE = "99999999999999"
 
 export default function LoginPage() {
+  const navigation = useNavigation();
+
   const [document, setDocument] = useState<string>();
   const [documentType, setDocumentType] = useState<typeof CPF_MASK | typeof CNPJ_MASK | typeof TYPE>(TYPE);
 
@@ -26,9 +29,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState<string>();
 
   const login = () => {
-    alert(JSON.stringify({
-      document, password
-    }))
+    (navigation.navigate as any)('home');
   }
 
   return (

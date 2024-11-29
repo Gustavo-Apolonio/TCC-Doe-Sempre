@@ -9,7 +9,11 @@ const Sentences = [
   'Uma doação pode mudar uma vida',
 ];
 
-export default function MotivationText() {
+interface MotivationTextProps {
+  bold?: boolean;
+}
+
+export default function MotivationText({ bold }: MotivationTextProps) {
   const [text, setText] = useState('Doe esperança, faça a diferença');
 
   useEffect(() => {
@@ -18,7 +22,7 @@ export default function MotivationText() {
   }, []);
 
   return (
-    <Text style={styles.text}>{text}</Text>
+    <Text style={{ ...styles.text, color: bold ? '#fff' : styles.text.color, fontWeight: bold ? 500 : 300, }}>{text}</Text>
   )
 }
 

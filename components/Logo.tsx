@@ -3,7 +3,7 @@ import { Image, StyleSheet, View } from "react-native";
 const LogoSource = require('@/assets/images/logo.png');
 
 interface LogoProps {
-  size?: 'sm' | 'lg';
+  size?: 'xs' | 'sm' | 'lg';
 }
 
 export default function Logo({ size = 'lg' }: LogoProps) {
@@ -19,6 +19,10 @@ export default function Logo({ size = 'lg' }: LogoProps) {
 }
 
 const styles = StyleSheet.create({
+  logoxs: {
+    width: 100,
+    height: 100,
+  },
   logosm: {
     width: 200,
     height: 200,

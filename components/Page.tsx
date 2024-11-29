@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import Logo from "./Logo";
 import MotivationText from "./Motivation";
 import Footer from "./Footer";
@@ -20,9 +20,9 @@ export default function PageComponent({ expandLogo, children }: PageComponentPro
       >
         <Logo size={expandLogo ? 'lg' : 'sm'} />
 
-        <View style={styles.content}>
+        <SafeAreaView style={styles.content}>
           {children}
-        </View>
+        </SafeAreaView>
 
         <MotivationText />
 

@@ -1,28 +1,30 @@
-import { StyleSheet, Text, View } from "react-native";
-import PageComponent from "@/components/Page";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useAppSelector } from "@/store/hooks";
 import { userSelectors } from "@/store/states/selectors";
-import { useEffect } from "react";
+import LoggedAreaComponent from "@/components/LoggedArea";
+import { useState } from "react";
+import RegisterDonationComponent from "@/components/RegisterDonation";
+import DonationsComponent from "@/components/Donations";
 
 export default function HomePage() {
   const stateUser = useAppSelector((state) => userSelectors.getUser(state));
 
-  useEffect(() => {
-    console.log(stateUser);
-  }, [])
+  const [addingDonation, setAddingDonation] = useState<boolean>(false);
 
   return (
-    <PageComponent>
-      <View style={styles.container}>
-        <Text>Home app page {stateUser.document}</Text>
-      </View>
-    </PageComponent>
+    <LoggedAreaComponent
+      confirmFooter={addingDonation}
+      footerAction={() => setAddingDonation(!addingDonation)}
+    >
+      {addingDonation ? (
+        <RegisterDonationComponent />
+      ) : (
+        <DonationsComponent />
+      )}
+    </LoggedAreaComponent>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-  },
-});
 
+});

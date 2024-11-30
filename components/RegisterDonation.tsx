@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import SelectPlaceComponent from "./SelectPlace";
+import { useAppSelector } from "@/store/hooks";
+import { placesSelectors } from "@/store/states/selectors";
+import { IDonationTicket } from "@/store/states/donations/slices";
+import DonationOption from "./DonationOption";
 
-const ClotheSource = require('@/assets/images/t-shirt.png');
-const FoodSource = require('@/assets/images/food-together.png');
-const AllSource = require('@/assets/images/all-together.png');
+interface RegisterDonationComponentProps {
+  showSubmitConfirmation: boolean;
+  onSubmit: (payload?: IDonationTicket) => void;
+}
 
-export default function RegisterDonationComponent() {
+export default function RegisterDonationComponent({ showSubmitConfirmation, onSubmit }: RegisterDonationComponentProps) {
+  const statePlaces = useAppSelector((state) => placesSelectors.getPlaces({ places: state.places }));
+
   const [donationOptionSelected, setDonationOptionSelected] = useState<number>();
-  const [placeOptionSelected, setPlaceOptionSelected] = useState<string>();
+  const [placeOptionSelected, setPlaceOptionSelected] = useState<number>();
 
   const selectOption = (selection: number) => {
     if (selection === donationOptionSelected) return setDonationOptionSelected(undefined);
@@ -16,48 +23,68 @@ export default function RegisterDonationComponent() {
     setDonationOptionSelected(selection);
   };
 
+  const preparePayload = (confirm: boolean) => {
+    let payload: IDonationTicket | undefined = undefined;
+
+    if (confirm) {
+      payload = {
+        itemType: donationOptionSelected ?? 0,
+        place: statePlaces.find((place: any) => place.value === placeOptionSelected)?.label,
+        status: 'pending',
+      };
+    }
+
+    onSubmit(payload);
+  }
+
   return (
     <View style={styles.container}>
       <Text>O que irá doar?</Text>
       <View style={styles.donationOptions}>
-        <TouchableOpacity
-          style={{ ...styles.donationOption, ...(donationOptionSelected === 0 && styles.donationOptionSelected) }}
-          onPress={() => selectOption(0)}
-        >
-          <View>
-            <Image source={ClotheSource} style={styles.donationImg} resizeMode="contain" />
-            <Text style={styles.donationText} >Roupas</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ ...styles.donationOption, ...(donationOptionSelected === 1 && styles.donationOptionSelected) }}
-          onPress={() => selectOption(1)}
-        >
-          <View>
-            <Image source={FoodSource} style={styles.donationImg} resizeMode="contain" />
-            <Text style={styles.donationText} >Alimento</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ ...styles.donationOption, ...(donationOptionSelected === 2 && styles.donationOptionSelected) }}
-          onPress={() => selectOption(2)}
-        >
-          <View>
-            <Image source={AllSource} style={styles.donationImg} resizeMode="contain" />
-            <Text style={styles.donationText} >Ambas</Text>
-          </View>
-        </TouchableOpacity>
+        <DonationOption
+          type={0}
+          selectOption={selectOption}
+          selected={donationOptionSelected === 0}
+        />
+        <DonationOption
+          type={1}
+          selectOption={selectOption}
+          selected={donationOptionSelected === 1}
+        />
+        <DonationOption
+          type={2}
+          selectOption={selectOption}
+          selected={donationOptionSelected === 2}
+        />
       </View>
-      <Text>Selecione o ponto de entrega mais próximo</Text>
-      <Picker
-        selectedValue={placeOptionSelected}
-        style={styles.picker}
-        onValueChange={(itemValue) => setPlaceOptionSelected(itemValue)}
-      >
-        <Picker.Item label="Supermercado Sonda - Av Paulista" value="0" />
-        <Picker.Item label="Supermercado Sonda - Av Paulista" value="1" />
-        <Picker.Item label="Supermercado Sonda - Av Paulista" value="2" />
-      </Picker>
+      <View style={styles.placesContainer}>
+        <Text style={styles.placesLabel}>Selecione o ponto de entrega mais próximo</Text>
+        <SelectPlaceComponent
+          selected={placeOptionSelected}
+          selectValue={setPlaceOptionSelected}
+        />
+      </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showSubmitConfirmation}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>AVISO</Text>
+            <Text style={styles.modalText}>
+              Certifique-se de que o item a ser doado encontra-se fechado, dentro do prazo de validade ou bem conservados e com condições a uso.
+            </Text>
+            <View style={styles.modalActions}>
+              <Pressable onPress={() => preparePayload(false)}>
+                <Text style={{ ...styles.modalText, ...styles.modalAction }}>Cancelar</Text>
+              </Pressable>
+              <Pressable onPress={() => preparePayload(true)}>
+                <Text style={{ ...styles.modalText, ...styles.modalAction }}>OK</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -72,29 +99,46 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 40,
+    marginBottom: 40,
   },
-  donationOption: {
-    alignItems: 'center',
+  placesContainer: {
+    alignItems: 'center'
+  },
+  placesLabel: {
+    marginBottom: 16,
+  },
+
+  centeredView: {
+    flex: 1,
     justifyContent: 'center',
-    width: 80,
-    height: 80,
-    backgroundColor: '#d9d9d9',
+    alignItems: 'center',
   },
-  donationOptionSelected: {
-    backgroundColor: '#6CC1E780',
-    borderStyle: 'solid',
-    borderWidth: 2,
-    borderColor: '#0078AE',
+  modalView: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    maxWidth: 350,
   },
-  donationImg: {
-    width: 60,
-    height: 60,
-  },
-  donationText: {
+  modalText: {
+    marginBottom: 15,
     textAlign: 'center',
   },
-  picker: {
-    width: 200,
-    height: 50,
+  modalActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '45%'
   },
+  modalAction: {
+    color: "#4D85FF",
+  }
 });

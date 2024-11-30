@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
-import { userReducer } from './states/slices';
+import { donationsReducer, placesReducer, userReducer } from './states/slices';
 
 const rootReducer = combineReducers({
   user: userReducer,
+  places: placesReducer,
+  donations: donationsReducer,
 });
 
 export const setupStore = configureStore({

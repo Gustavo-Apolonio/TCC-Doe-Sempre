@@ -8,6 +8,7 @@ export const initialState: any = {
   email: null,
   city: null,
   uf: null,
+  isDonor: null,
 };
 
 const userSlice = createSlice({

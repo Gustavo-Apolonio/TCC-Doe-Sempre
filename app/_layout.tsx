@@ -6,6 +6,7 @@ import SplashPage from "./index";
 import LoginPage from "./login";
 import RegisterPage from "./register";
 import HomePage from "./home";
+import SettingsPage from './settings';
 import { Provider } from "react-redux";
 import { Store } from "@/store/store";
 
@@ -31,6 +32,7 @@ export default function RootLayout() {
         <Stack.Screen name="register" component={RegisterPage} />
 
         <Stack.Screen name="home" component={HomePage} />
+        <Stack.Screen name="settings" component={SettingsPage} />
       </Stack.Navigator>
     </Provider>
   );

@@ -7,6 +7,10 @@ import PageComponent from "@/components/Page";
 export default function App() {
   const navigation = useNavigation();
 
+  const login = () => {
+    (navigation.navigate as any)('login');
+  }
+
   const newRegister = (isDonor: boolean) => {
     (navigation.navigate as any)('register', { isDonor });
   }
@@ -14,7 +18,7 @@ export default function App() {
   return (
     <PageComponent expandLogo>
       <View style={styles.container}>
-        <ActionButton text="Entrar" link={{ href: "/login" as RelativePathString }} />
+        <ActionButton text="Entrar" callback={login} />
         <ActionButton text="Seja um doador" callback={() => newRegister(true)} />
         <ActionButton text="Seja um ponto de coleta" callback={() => newRegister(false)} />
       </View>

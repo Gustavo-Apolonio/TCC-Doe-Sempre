@@ -4,13 +4,19 @@ import { donationsSelectors } from "@/store/states/selectors";
 import { Image, ScrollView, Text, View } from "react-native";
 import { StyleSheet } from "react-native";
 import DonationComponent from "./Donation";
+import ActionButton from "./ActionButton";
 
 const DonationSource = require('@/assets/images/background-donations.png');
 
-export default function DonationsComponent() {
+interface DonationsComponentProps {
+  isDonor: boolean;
+  registerDonate: () => void;
+}
+
+export default function DonationsComponent({ isDonor, registerDonate }: DonationsComponentProps) {
   const stateDonations = useAppSelector(donationsSelectors.getDonations);
 
-  return stateDonations.length > 0 ?
+  return stateDonations.length > 0 && isDonor ?
     (
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
         {stateDonations.map((donation: IDonationTicket, index: number) => (
@@ -30,7 +36,7 @@ export default function DonationsComponent() {
           style={styles.backgroundImg}
           resizeMode="contain"
         />
-        <Text>Você ainda não fez nenhuma doação</Text>
+        {!isDonor ? (<ActionButton text="Registrar recebimento" callback={registerDonate} />) : (<Text>Você ainda não fez nenhuma doação</Text>)}
       </View>
     );
 }

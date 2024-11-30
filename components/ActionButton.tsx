@@ -1,27 +1,20 @@
-import AppBorder from "@/styles/CustomBorder";
-import { RelativePathString } from "expo-router";
-import { Link } from "expo-router";
-import { Linking, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { AppBorder } from "@/styles/CustomBorder";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface IActionButtonProps {
   text: string;
+  secondary?: boolean;
   callback?: () => void;
-  link?: {
-    href: RelativePathString;
-  };
 }
 
-export default function ActionButton({ text, callback = () => { }, link }: IActionButtonProps) {
-  return link ? (
-    <Link
-      href={link.href}
-      style={{ ...styles.btn, ...AppBorder }}
-    >
-      <Text style={styles.btnText}>{text}</Text>
-    </Link>
-  ) : (
+export default function ActionButton({ text, secondary, callback = () => { } }: IActionButtonProps) {
+  return (
     <TouchableOpacity
-      style={{ ...styles.btn, ...AppBorder }}
+      style={{
+        ...styles.btn,
+        ...AppBorder,
+        ...(secondary && styles.btnSecondary)
+      }}
       onPressOut={() => callback()}
     >
       <Text style={styles.btnText}>{text}</Text>
@@ -38,6 +31,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     elevation: 2,
     width: '100%',
+  },
+  btnSecondary: {
+    backgroundColor: '#ececec',
   },
   btnText: {
     color: "#000",

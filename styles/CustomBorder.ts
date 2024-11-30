@@ -6,7 +6,11 @@ const Style = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 50,
     borderBottomLeftRadius: 10,
-  }
+  },
+  RoundedBorder: {
+    borderTopLeftRadius: 50,
+    borderBottomLeftRadius: 50,
+  },
 });
 
-export default Style.AppBorder;
+export const { AppBorder, RoundedBorder } = Style;

@@ -4,11 +4,14 @@ import { TextInputMask } from "react-native-masked-text";
 
 import PageComponent from "@/components/Page";
 import ActionButton from "@/components/ActionButton";
-import AppBorder from "@/styles/CustomBorder";
+import { AppBorder } from "@/styles/CustomBorder";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
+import { userActions } from "@/store/states/slices";
+import { useAppDispatch } from "@/store/hooks";
 
 export default function RegisterPage() {
+  const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const route = useRoute();
   const { isDonor } = route.params as any;
@@ -27,6 +30,10 @@ export default function RegisterPage() {
   }
 
   const register = () => {
+    dispatch(userActions.setState({
+      document,
+      isDonor
+    }));
     (navigation.navigate as any)('home');
   };
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TextInputMask } from "react-native-masked-text";
-import AppBorder from "@/styles/CustomBorder";
+import { AppBorder } from "@/styles/CustomBorder";
 import { ValidateDocument } from "@/utils/ValidateDocument";
 import ActionButton from "@/components/ActionButton";
 import PageComponent from "@/components/Page";
@@ -32,7 +32,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState<string>();
 
   const login = () => {
-    dispatch(userActions.setState({ document }));
+    dispatch(userActions.setState({
+      document,
+      isDonor: document && document?.length <= 11,
+    }));
     (navigation.navigate as any)('home');
   }
 

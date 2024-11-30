@@ -1,11 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
-import { donationsReducer, placesReducer, userReducer } from './states/slices';
+import { cupomsReducer, donationsReducer, placesReducer, userReducer } from './states/slices';
 
 const rootReducer = combineReducers({
   user: userReducer,
   places: placesReducer,
   donations: donationsReducer,
+  cupoms: cupomsReducer,
 });
 
 export const setupStore = configureStore({

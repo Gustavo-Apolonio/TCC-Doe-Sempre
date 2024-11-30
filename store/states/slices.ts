@@ -15,3 +15,9 @@ export {
   reducer as donationsReducer,
   initialState as donationsInit,
 } from './donations/slices';
+
+export {
+  actions as cupomsActions,
+  reducer as cupomsReducer,
+  initialState as cupomsInit,
+} from './cupoms/slices';

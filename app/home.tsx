@@ -1,58 +1,76 @@
 import { StyleSheet } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import LoggedAreaComponent from "@/components/LoggedArea";
-import RegisterDonationComponent from "@/components/RegisterDonation";
+import RegisterDonationComponent, { IGenerateCupom } from "@/components/RegisterDonation";
 import DonationsComponent from "@/components/Donations";
 import { donationsActions } from "@/store/states/slices";
 import { IDonationTicket } from "@/store/states/donations/slices";
-import { userSelectors } from "@/store/states/selectors";
+import { cupomsSelectors, userSelectors } from "@/store/states/selectors";
+import { GenerateCupomByValues } from "@/utils/Cupoms";
+import { useRoute } from "@react-navigation/native";
 
 export default function HomePage() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const route = useRoute();
 
+  const resetScreen = (route.params as { reset: boolean })?.reset;
   const stateUser = useAppSelector(userSelectors.getUser);
+  const stateCupoms = useAppSelector(cupomsSelectors.getCupoms);
 
   const [addingDonation, setAddingDonation] = useState<boolean>(false);
   const [showSubmissionConfirmation, setShowSubmissionConfirmation] = useState<boolean>(false);
 
-  const triggerFooterAction = () => {
+  const handleRegisterDonate = () => {
     if (addingDonation) setShowSubmissionConfirmation(true);
     else setAddingDonation(true);
   };
 
-  const handleOnSubmit = (payload?: IDonationTicket) => {
+  const handleOnSubmit = (payload?: IDonationTicket | IGenerateCupom) => {
     if (payload) {
-      dispatch(donationsActions.addDonation({ ...payload }));
-      setShowSubmissionConfirmation(false);
+      if (stateUser.isDonor) {
+        dispatch(donationsActions.addDonation({ ...payload } as IDonationTicket));
+        setAddingDonation(false);
+        setShowSubmissionConfirmation(false);
+        return;
+      }
+
       setAddingDonation(false);
+      setShowSubmissionConfirmation(false);
+      (navigation.navigate as any)('sendCupom', { cupom: GenerateCupomByValues(stateCupoms, (payload as IGenerateCupom).itemType, (payload as IGenerateCupom).foodQuantity, (payload as IGenerateCupom).clotheQuantity) });
       return;
     }
 
     setShowSubmissionConfirmation(false);
   }
 
+  const handleCancelAdding = () => {
+    setAddingDonation(false);
+  }
+
   const openSettings = () => {
     (navigation.navigate as any)('settings');
   }
 
-  const handleRegisterDonate = () => {
-    alert('Someone is donating');
-  }
+  useEffect(() => {
+    setAddingDonation(false);
+  }, [resetScreen]);
 
   return (
     <LoggedAreaComponent
-      isDonor={stateUser.isDonor}
+      isDonor={addingDonation || stateUser.isDonor}
       onSettings={openSettings}
       confirmFooter={addingDonation}
-      footerAction={() => triggerFooterAction()}
+      footerAction={() => handleRegisterDonate()}
     >
       {addingDonation ? (
         <RegisterDonationComponent
+          isDonor={stateUser.isDonor}
           showSubmitConfirmation={showSubmissionConfirmation}
           onSubmit={handleOnSubmit}
+          onCancel={handleCancelAdding}
         />
       ) : (
         <DonationsComponent

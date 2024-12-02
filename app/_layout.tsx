@@ -9,6 +9,7 @@ import HomePage from "./home";
 import SettingsPage from './settings';
 import { Provider } from "react-redux";
 import { Store } from "@/store/store";
+import SendCupomPage from "./sendCupom";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export default function RootLayout() {
 
         <Stack.Screen name="home" component={HomePage} />
         <Stack.Screen name="settings" component={SettingsPage} />
+        <Stack.Screen name="sendCupom" component={SendCupomPage} />
       </Stack.Navigator>
     </Provider>
   );

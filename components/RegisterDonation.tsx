@@ -5,17 +5,30 @@ import { useAppSelector } from "@/store/hooks";
 import { placesSelectors } from "@/store/states/selectors";
 import { IDonationTicket } from "@/store/states/donations/slices";
 import DonationOption from "./DonationOption";
+import { TextInputMask } from "react-native-masked-text";
+import { RoundedBorder } from "@/styles/CustomBorder";
+import ActionButton from "./ActionButton";
 
-interface RegisterDonationComponentProps {
-  showSubmitConfirmation: boolean;
-  onSubmit: (payload?: IDonationTicket) => void;
+export interface IGenerateCupom {
+  itemType: number;
+  foodQuantity: number;
+  clotheQuantity: number;
 }
 
-export default function RegisterDonationComponent({ showSubmitConfirmation, onSubmit }: RegisterDonationComponentProps) {
+interface RegisterDonationComponentProps {
+  isDonor: boolean;
+  showSubmitConfirmation: boolean;
+  onSubmit: (payload?: IDonationTicket | IGenerateCupom) => void;
+  onCancel: () => void;
+}
+
+export default function RegisterDonationComponent({ isDonor, showSubmitConfirmation, onSubmit, onCancel }: RegisterDonationComponentProps) {
   const statePlaces = useAppSelector((state) => placesSelectors.getPlaces({ places: state.places }));
 
   const [donationOptionSelected, setDonationOptionSelected] = useState<number>();
   const [placeOptionSelected, setPlaceOptionSelected] = useState<number>();
+  const [foodQuantity, setFoodQuantity] = useState<string | undefined>();
+  const [clotheQuantity, setClotheQuantity] = useState<string | undefined>();
 
   const selectOption = (selection: number) => {
     if (selection === donationOptionSelected) return setDonationOptionSelected(undefined);
@@ -24,14 +37,22 @@ export default function RegisterDonationComponent({ showSubmitConfirmation, onSu
   };
 
   const preparePayload = (confirm: boolean) => {
-    let payload: IDonationTicket | undefined = undefined;
+    let payload: IDonationTicket | IGenerateCupom | undefined = undefined;
 
     if (confirm) {
-      payload = {
-        itemType: donationOptionSelected ?? 0,
-        place: statePlaces.find((place: any) => place.value === placeOptionSelected)?.label,
-        status: 'pending',
-      };
+      if (isDonor) {
+        payload = {
+          itemType: donationOptionSelected ?? 0,
+          place: statePlaces.find((place: any) => place.value === placeOptionSelected)?.label,
+          status: 'pending',
+        };
+      } else {
+        payload = {
+          itemType: donationOptionSelected ?? 0,
+          foodQuantity: parseFloat(foodQuantity?.replace(',', '.') ?? ''),
+          clotheQuantity: parseFloat(clotheQuantity?.replace(',', '.') ?? ''),
+        }
+      }
     }
 
     onSubmit(payload);
@@ -39,7 +60,7 @@ export default function RegisterDonationComponent({ showSubmitConfirmation, onSu
 
   return (
     <View style={styles.container}>
-      <Text>O que irá doar?</Text>
+      <Text>O que {isDonor ? 'irá doar' : 'está recebendo'}?</Text>
       <View style={styles.donationOptions}>
         <DonationOption
           type={0}
@@ -47,23 +68,63 @@ export default function RegisterDonationComponent({ showSubmitConfirmation, onSu
           selected={donationOptionSelected === 0}
         />
         <DonationOption
-          type={1}
-          selectOption={selectOption}
-          selected={donationOptionSelected === 1}
-        />
-        <DonationOption
           type={2}
           selectOption={selectOption}
           selected={donationOptionSelected === 2}
         />
-      </View>
-      <View style={styles.placesContainer}>
-        <Text style={styles.placesLabel}>Selecione o ponto de entrega mais próximo</Text>
-        <SelectPlaceComponent
-          selected={placeOptionSelected}
-          selectValue={setPlaceOptionSelected}
+        <DonationOption
+          type={1}
+          selectOption={selectOption}
+          selected={donationOptionSelected === 1}
         />
       </View>
+      {isDonor ? (
+        <View style={styles.placesContainer}>
+          <Text style={styles.placesLabel}>Selecione o ponto de entrega mais próximo</Text>
+          <SelectPlaceComponent
+            selected={placeOptionSelected}
+            selectValue={setPlaceOptionSelected}
+          />
+        </View>
+      ) : (
+        <View>
+          {donationOptionSelected !== 1 && (
+            <View style={{ ...styles.row }}>
+              <TextInputMask
+                type={"custom"}
+                options={{
+                  mask: "99,99",
+                }}
+                keyboardType="numeric"
+                style={{ ...styles.input, width: '85%', }}
+                placeholder="00,00"
+                placeholderTextColor="#999"
+                value={clotheQuantity}
+                returnKeyType="next"
+                onChangeText={(val) => setClotheQuantity(val)}
+              />
+              <Text style={{ ...styles.inputLabel, marginBottom: 25, }}>PÇS</Text>
+            </View>
+          )}
+          {donationOptionSelected !== 0 && (<View style={{ ...styles.row }}>
+            <TextInputMask
+              type={"custom"}
+              options={{
+                mask: "99,99",
+              }}
+              keyboardType="numeric"
+              style={{ ...styles.input, width: '85%', }}
+              placeholder="00,00"
+              placeholderTextColor="#999"
+              value={foodQuantity}
+              returnKeyType="next"
+              onChangeText={(val) => setFoodQuantity(val)}
+            />
+            <Text style={{ ...styles.inputLabel, marginBottom: 25, }}>KG</Text>
+          </View>)}
+        </View>
+      )}
+      <ActionButton secondary text="Cancelar" callback={() => onCancel()} />
       <Modal
         animationType="fade"
         transparent={true}
@@ -72,11 +133,11 @@ export default function RegisterDonationComponent({ showSubmitConfirmation, onSu
           <View style={styles.modalView}>
             <Text style={styles.modalText}>AVISO</Text>
             <Text style={styles.modalText}>
-              Certifique-se de que o item a ser doado encontra-se fechado, dentro do prazo de validade ou bem conservados e com condições a uso.
+              Certifique-se de que o item a ser {isDonor ? 'doado' : 'recebido'} encontra-se fechado, dentro do prazo de validade ou bem conservados e com condições a uso.
             </Text>
             <View style={styles.modalActions}>
               <Pressable onPress={() => preparePayload(false)}>
-                <Text style={{ ...styles.modalText, ...styles.modalAction }}>Cancelar</Text>
+                <Text style={{ ...styles.modalText, ...styles.modalAction }}>Revisar</Text>
               </Pressable>
               <Pressable onPress={() => preparePayload(true)}>
                 <Text style={{ ...styles.modalText, ...styles.modalAction }}>OK</Text>
@@ -140,5 +201,28 @@ const styles = StyleSheet.create({
   },
   modalAction: {
     color: "#4D85FF",
-  }
+  },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  inputLabel: {
+    fontSize: 16,
+    textAlign: 'center',
+    margin: 12,
+    marginBottom: 8,
+  },
+  input: {
+    width: '100%',
+    backgroundColor: "#f0f0f0",
+    padding: 15,
+    paddingLeft: 25,
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 15,
+    ...RoundedBorder
+  },
 });

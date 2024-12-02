@@ -3,7 +3,6 @@ import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, T
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Logo from "./Logo";
 import MotivationText from "./Motivation";
-import DebugBorder from "@/styles/DebugBorder";
 
 interface LoggedAreaComponentProps extends PropsWithChildren {
   isDonor: boolean;
@@ -31,10 +30,10 @@ export default function LoggedAreaComponent({ isDonor, onSettings, confirmFooter
             <Icon name="user" size={50} color="#000" />
           </View>
 
-          {!isDonor && (
+          {!isDonor && onSettings && (
             <TouchableOpacity
               style={styles.headerSettings}
-              onPress={() => onSettings && onSettings()}
+              onPress={() => onSettings()}
             >
               <Icon name={'gear'} size={50} color="#808080" />
             </TouchableOpacity>

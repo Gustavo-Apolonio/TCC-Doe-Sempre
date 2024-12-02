@@ -47,10 +47,13 @@ export default function RegisterDonationComponent({ isDonor, showSubmitConfirmat
           status: 'pending',
         };
       } else {
+        const nFoodQuantity = parseFloat(foodQuantity?.replace(',', '.') ?? '');
+        const nClotheQuantity = parseFloat(clotheQuantity?.replace(',', '.') ?? '');
+
         payload = {
           itemType: donationOptionSelected ?? 0,
-          foodQuantity: parseFloat(foodQuantity?.replace(',', '.') ?? ''),
-          clotheQuantity: parseFloat(clotheQuantity?.replace(',', '.') ?? ''),
+          foodQuantity: isNaN(nFoodQuantity) ? 0 : nFoodQuantity,
+          clotheQuantity: isNaN(nClotheQuantity) ? 0 : nClotheQuantity,
         }
       }
     }

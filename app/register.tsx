@@ -58,7 +58,7 @@ export default function RegisterPage() {
           type={isDonor ? "cpf" : 'cnpj'}
           keyboardType="numeric"
           style={styles.input}
-          placeholder={"Insira seu " + isDonor ? 'CPF' : 'CNPJ'}
+          placeholder={"Insira seu " + (isDonor ? 'CPF' : 'CNPJ')}
           placeholderTextColor="#999"
           value={document}
           returnKeyType="next"
